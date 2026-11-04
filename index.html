@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0d1117">
+    <meta name="description" content="Operations playbook template with offline evidence storage">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Playbook">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <title>ethical Hackers PlayBook</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --surface-color: #161b22;
+            --border-color: #30363d;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent-color: #58a6ff;
+            --code-bg: #010409;
+            --warning-color: #d29922;
+            --heading-color: #ffffff;
+            --inline-code: #ff7b72;
+            --danger-color: #f85149;
+            --success-color: #3fb950;
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f6f8fa;
+            --surface-color: #ffffff;
+            --border-color: #d0d7de;
+            --text-main: #24292f;
+            --text-muted: #57606a;
+            --accent-color: #0969da;
+            --code-bg: #f6f8fa;
+            --warning-color: #9a6700;
+            --heading-color: #1f2328;
+            --inline-code: #cf222e;
+            --danger-color: #cf222e;
+            --success-color: #1a7f37;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .header-controls {
+            max-width: 850px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .theme-toggle-btn {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle-btn:hover { opacity: 0.9; }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 40px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        h1, h2, h3 {
+            color: var(--heading-color);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        h1 { font-size: 2em; margin-top: 0; border-bottom: 2px solid var(--accent-color); }
+        h2 { font-size: 1.5em; margin-top: 30px; }
+        h3 { font-size: 1.25em; border-bottom: none; padding-bottom: 0; }
+
+        ul { padding-left: 20px; margin: 10px 0; }
+        li { margin-bottom: 8px; }
+        strong { color: var(--heading-color); }
+
+        code {
+            font-family: ui-monospace, SFMono-Regular, "SF Pro Mono", Menlo, Monaco, Consolas, monospace;
+            background-color: rgba(110, 118, 129, 0.2);
+            padding: 0.2em 0.4em;
+            border-radius: 6px;
+            font-size: 85%;
+            color: var(--inline-code);
+        }
+
+        .code-container { position: relative; margin: 15px 0; }
+
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+            padding-right: 70px;
+            overflow: auto;
+            margin: 0;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            font-size: 90%;
+            color: var(--text-main);
+            display: block;
+        }
+
+        [data-theme="light"] pre code { color: #24292f; }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover { color: var(--accent-color); border-color: var(--accent-color); }
+
+        .diagram {
+            background-color: var(--code-bg);
+            border: 1px dashed var(--accent-color);
+            color: var(--accent-color);
+            padding: 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            text-align: center;
+            overflow-x: auto;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .warning-box {
+            border-left: 4px solid var(--warning-color);
+            background-color: rgba(210, 153, 34, 0.08);
+            padding: 15px;
+            border-radius: 0 6px 6px 0;
+            margin: 15px 0;
+        }
+
+        .warning-box p { margin: 5px 0; }
+
+        hr { border: none; border-top: 1px solid var(--border-color); margin: 30px 0; }
+
+        /* ---------- Storage UI ---------- */
+        .upload-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            padding: 18px;
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+            margin: 15px 0;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+        .upload-area.dragover {
+            border-color: var(--accent-color);
+            background-color: rgba(88, 166, 255, 0.08);
+        }
+        .action-btn {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+        .action-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+        .action-btn.primary {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: #fff;
+        }
+        .action-btn.primary:hover { opacity: 0.9; color: #fff; }
+        .action-btn.danger:hover { border-color: var(--danger-color); color: var(--danger-color); }
+
+        .text-input {
+            flex: 1;
+            min-width: 180px;
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-family: inherit;
+        }
+        .text-input:focus { outline: none; border-color: var(--accent-color); }
+
+        .storage-info {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .file-card {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.15s, transform 0.15s;
+        }
+        .file-card:hover { border-color: var(--accent-color); transform: translateY(-2px); }
+
+        .file-thumb {
+            width: 100%;
+            height: 120px;
+            background-color: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+        .file-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .file-thumb .file-icon {
+            font-size: 3em;
+            line-height: 1;
+            color: var(--text-muted);
+        }
+
+        .file-meta {
+            padding: 10px 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            font-size: 0.82em;
+            min-width: 0;
+        }
+        .file-name {
+            color: var(--heading-color);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 1.05em;
+        }
+        .file-category {
+            display: inline-block;
+            font-size: 0.72em;
+            padding: 1px 8px;
+            border-radius: 10px;
+            background: rgba(88, 166, 255, 0.15);
+            color: var(--accent-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            align-self: flex-start;
+            margin-bottom: 2px;
+        }
+        [data-theme="light"] .file-category {
+            background: rgba(9, 105, 218, 0.1);
+        }
+        .file-description {
+            color: var(--text-muted);
+            font-size: 0.95em;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 2px;
+        }
+        .file-sub { color: var(--text-muted); font-size: 0.92em; }
+
+        .file-actions {
+            display: flex;
+            border-top: 1px solid var(--border-color);
+        }
+        .file-actions button {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.15s, color 0.15s;
+        }
+        .file-actions button:hover { background-color: rgba(110, 118, 129, 0.15); color: var(--accent-color); }
+        .file-actions button.delete:hover { color: var(--danger-color); }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-muted);
+            padding: 30px;
+            font-style: italic;
+            border: 1px dashed var(--border-color);
+            border-radius: 6px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--success-color);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            z-index: 1100;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        /* ---------- Modal ---------- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            backdrop-filter: blur(2px);
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: modalIn 0.15s ease-out;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--heading-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.6em;
+            cursor: pointer;
+            padding: 0 4px;
+            line-height: 1;
+        }
+        .modal-close:hover { color: var(--danger-color); }
+        .modal-body { padding: 20px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            font-size: 0.9em;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: var(--heading-color);
+        }
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        .form-group textarea { resize: vertical; min-height: 70px; }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        .form-group .hint {
+            font-size: 0.82em;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+        .form-group.required label::after {
+            content: " *";
+            color: var(--danger-color);
+        }
+        .modal-footer {
+            padding: 14px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* ---------- Phase folders ---------- */
+        .phase-group {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin: 12px 0;
+            background-color: var(--surface-color);
+        }
+        .phase-group > summary {
+            cursor: pointer;
+            padding: 10px 14px;
+            font-weight: 600;
+            color: var(--heading-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+            user-select: none;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.92em;
+        }
+        .phase-group > summary::-webkit-details-marker { display: none; }
+        .phase-group > summary::before {
+            content: "▸";
+            color: var(--text-muted);
+            transition: transform 0.15s;
+            display: inline-block;
+        }
+        .phase-group[open] > summary::before { transform: rotate(90deg); }
+        .phase-group > summary:hover { color: var(--accent-color); }
+        .phase-count {
+            margin-left: auto;
+            font-size: 0.8em;
+            font-weight: 600;
+            padding: 1px 9px;
+            border-radius: 10px;
+            background: rgba(88, 166, 255, 0.15);
+            color: var(--accent-color);
+        }
+        .phase-body { padding: 0 14px 14px; }
+        .phase-body .file-grid { margin-top: 4px; }
+        .phase-empty { color: var(--text-muted); font-style: italic; font-size: 0.85em; padding: 6px 0; }
+
+        @media (max-width: 600px) {
+            body { padding: 20px 10px; }
+            .container { padding: 20px; }
+        }
+
+        /* ---------- Print ---------- */
+        @media print {
+            body { background: #fff !important; color: #24292f !important; padding: 0 !important; }
+            .header-controls, .upload-area, .file-actions, .copy-btn, .modal-overlay { display: none !important; }
+            .container { box-shadow: none !important; border: none !important; background: #fff !important; }
+            pre { background: #f6f8fa !important; border: 1px solid #d0d7de !important; }
+            pre code { color: #24292f !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-controls">
+    <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()">
+        🌙 Toggle Light/Dark Mode
+    </button>
+    <button class="theme-toggle-btn" onclick="exportToPDF()">
+        📄 Export PDF
+    </button>
+</div>
+
+<div class="container">
+    <h3>🛠️ ethical Hackers Playbook: Tools & Methodology Template : By Christian Zigah</h3>
+
+    <h2>📎Evidence & Attachments Storage (IndexedDB)</h2>
+    <div class="warning-box">
+        <p><strong>Local-only storage.</strong> Records and attachments are saved in your browser's IndexedDB and never leave your device. Use <strong>➕ New Record</strong> to add structured evidence (with title, category, description, and optional file), or <strong>📁 Quick Upload</strong> to drop files fast. Records are filed into phase folders (<code>00-Project-Information/</code> through <code>07-Final-Report/</code>), and all of them are bundled into the PDF via <em>Export PDF</em>, grouped by phase.</p>
+    </div>
+
+    <div class="upload-area" id="uploadArea">
+        <input type="file" id="fileInput" multiple style="display:none;">
+        <button class="action-btn primary" onclick="openRecordModal()">➕ New Record</button>
+        <button class="action-btn" onclick="document.getElementById('fileInput').click()">📁 Quick Upload</button>
+        <input type="text" id="fileLabel" class="text-input" placeholder="Optional label for quick upload">
+        <select id="quickPhase" class="text-input" style="flex:0 0 auto;min-width:0;" title="Phase folder for uploads"></select>
+        <button class="action-btn danger" onclick="clearAllFiles()">🗑️ Clear All</button>
+        <span id="storageInfo" class="storage-info">Loading…</span>
+    </div>
+
+    <div id="fileGrid"></div>
+</div>
+
+<!-- ============ New / Edit Record Modal ============ -->
+<div class="modal-overlay" id="recordModal" onclick="if(event.target===this)closeRecordModal()">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-header">
+            <span id="modalTitle">➕ New Record</span>
+            <button type="button" class="modal-close" onclick="closeRecordModal()" title="Close (Esc)">×</button>
+        </div>
+        <form id="recordForm" onsubmit="saveRecord(event)">
+            <div class="modal-body">
+                <div class="form-group required">
+                    <label for="recTitle">Title</label>
+                    <input type="text" id="recTitle" placeholder="e.g., Phase 1 recon screenshot" maxlength="200" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="recPhase">Phase Folder</label>
+                    <select id="recPhase"></select>
+                </div>
+                <div class="form-group">
+                    <label for="recCategory">Category</label>
+                    <select id="recCategory">
+                        <option value="Note">📝 Note</option>
+                        <option value="Screenshot">🖼️ Screenshot</option>
+                        <option value="Evidence">🔍 Evidence</option>
+                        <option value="Log">📄 Log</option>
+                        <option value="Config">⚙️ Config</option>
+                        <option value="Command">💻 Command Output</option>
+                        <option value="Other">📦 Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="recDescription">Description</label>
+                    <textarea id="recDescription" placeholder="Optional context, notes, or observations…" maxlength="1000"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="recFile">Attachment</label>
+                    <input type="file" id="recFile" style="width:100%;color:var(--text-muted);font-size:0.9em;">
+                    <div class="hint" id="recFileHint">Optional — attach a file or image to this record.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="action-btn" onclick="closeRecordModal()">Cancel</button>
+                <button type="submit" class="action-btn primary" id="saveRecordBtn">💾 Save Record</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    /* ============ Theme Toggle ============ */
+    function toggleTheme() {
+        const root = document.documentElement;
+        const btn = document.getElementById('themeToggle');
+        const isLight = root.getAttribute('data-theme') === 'light';
+        if (isLight) {
+            root.removeAttribute('data-theme');
+            btn.textContent = '🌙 Toggle Light/Dark Mode';
+        } else {
+            root.setAttribute('data-theme', 'light');
+            btn.textContent = '☀️ Toggle Light/Dark Mode';
+        }
+    }
+
+    /* ============ Copy Buttons ============ */
+    function copyCode(btn) {
+        const code = btn.closest('.code-container').querySelector('pre code').innerText;
+        const done = () => {
+            const orig = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => { btn.textContent = orig; }, 1500);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(code).then(done).catch(() => fallbackCopy(code, done));
+        } else {
+            fallbackCopy(code, done);
+        }
+    }
+    function fallbackCopy(text, cb) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+        cb();
+    }
+
+    /* ============ Toast ============ */
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    function escapeHtml(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
+            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
+        );
+    }
+
+    /* ============ IndexedDB ============ */
+    const DB_NAME = 'playbook_attachments';
+    const DB_VERSION = 2;
+    const STORE_NAME = 'files';
+    const PHASES = [
+        '00-Project-Information',
+        '01-Reconnaissance',
+        '02-Enumeration',
+        '03-Vulnerability-Assessment',
+        '04-Exploitation',
+        '05-Privilege-Escalation',
+        '06-Flag-Retrieval',
+        '07-Final-Report'
+    ];
+    const DEFAULT_PHASE = PHASES[0];
+    const phaseOpen = {};   // remembers which folders the user opened/closed
+    function getPhase(item) { return PHASES.includes(item && item.phase) ? item.phase : DEFAULT_PHASE; }
+    function populatePhaseSelects() {
+        ['quickPhase', 'recPhase'].forEach((id) => {
+            const sel = document.getElementById(id);
+            if (!sel) return;
+            sel.innerHTML = '';
+            PHASES.forEach((p) => {
+                const o = document.createElement('option');
+                o.value = p;
+                o.textContent = '📁 ' + p + '/';
+                sel.appendChild(o);
+            });
+        });
+    }
+    let db = null;
+    let editingId = null;
+    const previewURLs = new Map();
+
+    function openDB() {
+        return new Promise((resolve, reject) => {
+            if (!('indexedDB' in window)) {
+                reject(new Error('IndexedDB is not supported in this browser.'));
+                return;
+            }
+            const req = indexedDB.open(DB_NAME, DB_VERSION);
+            req.onerror = () => reject(req.error);
+            req.onsuccess = () => { db = req.result; resolve(db); };
+            req.onupgradeneeded = (e) => {
+                const database = e.target.result;
+                const upgradeTx = e.target.transaction;
+                let store;
+                if (!database.objectStoreNames.contains(STORE_NAME)) {
+                    store = database.createObjectStore(STORE_NAME, {
+                        keyPath: 'id', autoIncrement: true
+                    });
+                    store.createIndex('name', 'name', { unique: false });
+                    store.createIndex('timestamp', 'timestamp', { unique: false });
+                } else {
+                    store = upgradeTx.objectStore(STORE_NAME);
+                }
+                if (!store.indexNames.contains('phase')) {
+                    store.createIndex('phase', 'phase', { unique: false });
+                }
+                // Migrate older records (no phase yet) into the first folder
+                store.openCursor().onsuccess = (ev) => {
+                    const cur = ev.target.result;
+                    if (!cur) return;
+                    const v = cur.value;
+                    if (!PHASES.includes(v.phase)) { v.phase = DEFAULT_PHASE; cur.update(v); }
+                    cur.continue();
+                };
+            };
+        });
+    }
+
+    function formatBytes(bytes) {
+        if (!bytes || bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function revokeAllPreviews() {
+        previewURLs.forEach((url) => URL.revokeObjectURL(url));
+        previewURLs.clear();
+    }
+
+    function iconForFile(type, name) {
+        if (type.startsWith('image/')) return '🖼️';
+        if (type.startsWith('video/')) return '🎬';
+        if (type.startsWith('audio/')) return '🎵';
+        if (type === 'application/pdf') return '📕';
+        if (type.startsWith('text/')) return '📄';
+        if (/\.(zip|tar|gz|7z|rar)$/i.test(name || '')) return '📦';
+        if (/\.(json|xml|ya?ml)$/i.test(name || '')) return '🧾';
+        return '📄';
+    }
+
+    /* ---- record field accessors (backward compatible with older entries) ---- */
+    function getTitle(item)       { return item.title || item.name || 'Untitled'; }
+    function getDescription(item) { return item.description || item.label || ''; }
+    function getCategory(item)    {
+        if (item.category) return item.category;
+        if (item.isImage) return 'Screenshot';
+        if (item.blob) return 'Evidence';
+        return 'Note';
+    }
+
+    /* ============ Rendering ============ */
+    function createCard(item) {
+        const card = document.createElement('div');
+        card.className = 'file-card';
+
+        const thumb = document.createElement('div');
+        thumb.className = 'file-thumb';
+        if (item.isImage && item.blob) {
+            const img = document.createElement('img');
+            const url = URL.createObjectURL(item.blob);
+            previewURLs.set(item.id, url);
+            img.src = url;
+            img.alt = getTitle(item);
+            img.loading = 'lazy';
+            thumb.appendChild(img);
+        } else {
+            const span = document.createElement('span');
+            span.className = 'file-icon';
+            span.textContent = item.blob ? iconForFile(item.type, item.name) : '📝';
+            thumb.appendChild(span);
+        }
+
+        const meta = document.createElement('div');
+        meta.className = 'file-meta';
+
+        const titleEl = document.createElement('div');
+        titleEl.className = 'file-name';
+        titleEl.title = getTitle(item);
+        titleEl.textContent = getTitle(item);
+        meta.appendChild(titleEl);
+
+        const cat = getCategory(item);
+        if (cat) {
+            const catEl = document.createElement('div');
+            catEl.className = 'file-category';
+            catEl.textContent = cat;
+            meta.appendChild(catEl);
+        }
+
+        const desc = getDescription(item);
+        if (desc) {
+            const descEl = document.createElement('div');
+            descEl.className = 'file-description';
+            descEl.textContent = desc;
+            descEl.title = desc;
+            meta.appendChild(descEl);
+        }
+
+        const subEl = document.createElement('div');
+        subEl.className = 'file-sub';
+        const bits = [];
+        if (item.blob) bits.push(formatBytes(item.size));
+        bits.push(new Date(item.timestamp).toLocaleString());
+        subEl.textContent = bits.join(' · ');
+        meta.appendChild(subEl);
+
+        const actions = document.createElement('div');
+        actions.className = 'file-actions';
+
+        if (item.blob) {
+            const dlBtn = document.createElement('button');
+            dlBtn.textContent = '⬇️';
+            dlBtn.title = 'Download';
+            dlBtn.onclick = () => downloadFile(item.id);
+            actions.appendChild(dlBtn);
+        }
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = '✏️';
+        editBtn.title = 'Edit';
+        editBtn.onclick = () => openRecordModal(item.id);
+        actions.appendChild(editBtn);
+
+        const delBtn = document.createElement('button');
+        delBtn.textContent = '🗑️';
+        delBtn.title = 'Delete';
+        delBtn.className = 'delete';
+        delBtn.onclick = () => deleteFile(item.id);
+        actions.appendChild(delBtn);
+
+        card.appendChild(thumb);
+        card.appendChild(meta);
+        card.appendChild(actions);
+        return card;
+    }
+
+    async function renderFiles() {
+        revokeAllPreviews();
+        const grid = document.getElementById('fileGrid');
+        if (!db) {
+            grid.innerHTML = '<div class="empty-state">Storage unavailable.</div>';
+            return;
+        }
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const req = tx.objectStore(STORE_NAME).getAll();
+        req.onsuccess = () => {
+            const items = req.result.sort((a, b) => b.timestamp - a.timestamp);
+            grid.innerHTML = '';
+            if (items.length === 0) {
+                const hint = document.createElement('div');
+                hint.className = 'empty-state';
+                hint.style.marginBottom = '12px';
+                hint.textContent = 'No records yet. Choose a phase folder, then use “➕ New Record” or “📁 Quick Upload” / drag & drop to file evidence.';
+                grid.appendChild(hint);
+            }
+            const groups = {};
+            PHASES.forEach((p) => { groups[p] = []; });
+            items.forEach((item) => groups[getPhase(item)].push(item));
+
+            PHASES.forEach((p) => {
+                const list = groups[p];
+                const det = document.createElement('details');
+                det.className = 'phase-group';
+                det.open = phaseOpen[p] === undefined ? list.length > 0 : phaseOpen[p];
+
+                const sum = document.createElement('summary');
+                sum.addEventListener('click', () => {
+                    setTimeout(() => { phaseOpen[p] = det.open; }, 0);
+                });
+                const nameEl = document.createElement('span');
+                nameEl.textContent = '📁 ' + p + '/';
+                const countEl = document.createElement('span');
+                countEl.className = 'phase-count';
+                countEl.textContent = list.length;
+                sum.appendChild(nameEl);
+                sum.appendChild(countEl);
+                det.appendChild(sum);
+
+                const body = document.createElement('div');
+                body.className = 'phase-body';
+                if (list.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'phase-empty';
+                    empty.textContent = 'Empty folder';
+                    body.appendChild(empty);
+                } else {
+                    const inner = document.createElement('div');
+                    inner.className = 'file-grid';
+                    list.forEach((item) => inner.appendChild(createCard(item)));
+                    body.appendChild(inner);
+                }
+                det.appendChild(body);
+                grid.appendChild(det);
+            });
+            updateStorageInfo(items);
+        };
+        req.onerror = () => {
+            grid.innerHTML = '<div class="empty-state">Failed to load records.</div>';
+        };
+    }
+
+    function updateStorageInfo(items) {
+        const total = items.reduce((s, i) => s + (i.size || 0), 0);
+        document.getElementById('storageInfo').textContent =
+            `${items.length} record(s) · ${formatBytes(total)} stored`;
+    }
+
+    /* ============ Quick Upload (file-only, no metadata form) ============ */
+    async function handleQuickUpload(fileList) {
+        if (!db) {
+            try { await openDB(); } catch (e) { showToast('Storage init failed: ' + e.message); return; }
+        }
+        const files = Array.from(fileList);
+        if (files.length === 0) return;
+        const label = document.getElementById('fileLabel').value.trim();
+        const phase = document.getElementById('quickPhase').value || DEFAULT_PHASE;
+        phaseOpen[phase] = true;
+
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        for (const file of files) {
+            store.add({
+                title: file.name,
+                description: label,
+                phase,
+                category: file.type.startsWith('image/') ? 'Screenshot' : 'File',
+                name: file.name,
+                type: file.type || 'application/octet-stream',
+                size: file.size,
+                isImage: file.type.startsWith('image/'),
+                timestamp: Date.now(),
+                blob: file
+            });
+        }
+        tx.oncomplete = () => {
+            document.getElementById('fileLabel').value = '';
+            showToast(`Stored ${files.length} file(s)`);
+            renderFiles();
+        };
+        tx.onerror = () => showToast('Failed to store files: ' + tx.error);
+    }
+
+    /* ============ New/Edit Record Modal ============ */
+    function openRecordModal(id = null) {
+        if (!db) { showToast('Storage unavailable'); return; }
+        editingId = id;
+        const modal = document.getElementById('recordModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const titleInput = document.getElementById('recTitle');
+        const descInput = document.getElementById('recDescription');
+        const catInput = document.getElementById('recCategory');
+        const phaseInput = document.getElementById('recPhase');
+        const fileInput = document.getElementById('recFile');
+        const hint = document.getElementById('recFileHint');
+
+        fileInput.value = '';
+
+        if (id === null) {
+            modalTitle.textContent = '➕ New Record';
+            titleInput.value = '';
+            descInput.value = '';
+            catInput.value = 'Note';
+            phaseInput.value = document.getElementById('quickPhase').value || DEFAULT_PHASE;
+            hint.textContent = 'Optional — attach a file or image to this record.';
+        } else {
+            modalTitle.textContent = '✏️ Edit Record';
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const req = tx.objectStore(STORE_NAME).get(id);
+            req.onsuccess = () => {
+                const item = req.result;
+                if (!item) { showToast('Record not found'); closeRecordModal(); return; }
+                titleInput.value = getTitle(item);
+                descInput.value = getDescription(item);
+                catInput.value = getCategory(item);
+                phaseInput.value = getPhase(item);
+                if (item.blob) {
+                    hint.textContent = `Current file: ${item.name} (${formatBytes(item.size)}) — choose a new file to replace it.`;
+                } else {
+                    hint.textContent = 'No file attached. Choose a file to add one.';
+                }
+            };
+        }
+
+        modal.classList.add('open');
+        setTimeout(() => titleInput.focus(), 60);
+    }
+
+    function closeRecordModal() {
+        document.getElementById('recordModal').classList.remove('open');
+        editingId = null;
+    }
+
+    async function saveRecord(e) {
+        e.preventDefault();
+        if (!db) { showToast('Storage unavailable'); return; }
+
+        const title = document.getElementById('recTitle').value.trim();
+        if (!title) { showToast('Title is required'); return; }
+        const description = document.getElementById('recDescription').value.trim();
+        const category = document.getElementById('recCategory').value;
+        const phase = document.getElementById('recPhase').value || DEFAULT_PHASE;
+        phaseOpen[phase] = true;
+        const newFile = document.getElementById('recFile').files[0] || null;
+
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+
+        if (editingId !== null) {
+            const getReq = store.get(editingId);
+            getReq.onsuccess = () => {
+                const existing = getReq.result;
+                if (!existing) return;
+                const updated = Object.assign({}, existing, { title, description, category, phase });
+                if (newFile) {
+                    updated.name = newFile.name;
+                    updated.type = newFile.type || 'application/octet-stream';
+                    updated.size = newFile.size;
+                    updated.isImage = newFile.type.startsWith('image/');
+                    updated.blob = newFile;
+                }
+                store.put(updated);
+            };
+            tx.oncomplete = () => {
+                showToast('Record updated');
+                closeRecordModal();
+                renderFiles();
+            };
+            tx.onerror = () => showToast('Update failed: ' + tx.error);
+        } else {
+            const record = {
+                title,
+                description,
+                category,
+                phase,
+                name: newFile ? newFile.name : 'Note',
+                type: newFile ? (newFile.type || 'application/octet-stream') : 'text/plain',
+                size: newFile ? newFile.size : 0,
+                isImage: newFile ? newFile.type.startsWith('image/') : false,
+                timestamp: Date.now(),
+                blob: newFile
+            };
+            store.add(record);
+            tx.oncomplete = () => {
+                showToast('Record added');
+                closeRecordModal();
+                renderFiles();
+            };
+            tx.onerror = () => showToast('Save failed: ' + tx.error);
+        }
+    }
+
+    /* ============ Download / Delete / Clear ============ */
+    function downloadFile(id) {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const req = tx.objectStore(STORE_NAME).get(id);
+        req.onsuccess = () => {
+            const item = req.result;
+            if (!item || !item.blob) { showToast('No file attached'); return; }
+            const url = URL.createObjectURL(item.blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = item.name || 'download';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        };
+    }
+
+    function deleteFile(id) {
+        if (!confirm('Delete this record from IndexedDB?')) return;
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).delete(id);
+        tx.oncomplete = () => { showToast('Record deleted'); renderFiles(); };
+    }
+
+    function clearAllFiles() {
+        if (!confirm('Delete ALL stored records and attachments? This cannot be undone.')) return;
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).clear();
+        tx.oncomplete = () => { showToast('All records cleared'); renderFiles(); };
+    }
+
+    /* ============ PDF Export ============ */
+    function blobToDataURL(blob) {
+        return new Promise((resolve, reject) => {
+            const r = new FileReader();
+            r.onload = () => resolve(r.result);
+            r.onerror = () => reject(r.error);
+            r.readAsDataURL(blob);
+        });
+    }
+
+    function getAllRecords() {
+        return new Promise((resolve, reject) => {
+            if (!db) return resolve([]);
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const req = tx.objectStore(STORE_NAME).getAll();
+            req.onsuccess = () => resolve(req.result.sort((a, b) => b.timestamp - a.timestamp));
+            req.onerror = () => reject(req.error);
+        });
+    }
+
+    const TEXT_PREVIEW_LIMIT = 20000;
+    const TEXT_EXT = /\.(txt|log|md|csv|tsv|json|xml|ya?ml|ini|cfg|conf|toml|sh|bash|py|js|ts|html?|css|sql|out|err|nmap|gnmap|pcap\.txt)$/i;
+    function isTextFile(item) {
+        const t = (item.type || '').toLowerCase();
+        if (t.startsWith('text/')) return true;
+        if (/(json|xml|yaml|javascript|x-sh|x-python|csv|x-log)/.test(t)) return true;
+        return TEXT_EXT.test(item.name || '');
+    }
+
+    async function exportToPDF() {
+        try {
+            showToast('Preparing PDF…');
+
+            // Oldest record first in the printed appendix
+            const records = (await getAllRecords()).sort((a, b) => a.timestamp - b.timestamp);
+            const recordsWithData = await Promise.all(records.map(async (r) => {
+                let dataUrl = null;
+                let textData = null;
+                let truncated = false;
+                if (r.isImage && r.blob) {
+                    try { dataUrl = await blobToDataURL(r.blob); } catch (e) { dataUrl = null; }
+                } else if (r.blob && isTextFile(r)) {
+                    try {
+                        const full = await r.blob.text();
+                        if (full.length > TEXT_PREVIEW_LIMIT) {
+                            textData = full.slice(0, TEXT_PREVIEW_LIMIT);
+                            truncated = true;
+                        } else {
+                            textData = full;
+                        }
+                    } catch (e) { textData = null; }
+                }
+                return { meta: r, dataUrl, textData, truncated };
+            }));
+
+            const clone = document.querySelector('.container').cloneNode(true);
+            clone.querySelectorAll('.copy-btn, .file-actions').forEach((el) => el.remove());
+
+            const uploadArea = clone.querySelector('#uploadArea');
+            if (uploadArea) {
+                uploadArea.innerHTML =
+                    '<div style="font-style:italic;color:#57606a;">Records are listed in the appendix.</div>';
+                uploadArea.style.cssText =
+                    'border:1px solid #d0d7de;background:#f6f8fa;padding:12px;border-radius:6px;margin:15px 0;';
+            }
+            const fileGrid = clone.querySelector('#fileGrid');
+            if (fileGrid) fileGrid.remove();
+
+            const appendix = document.createElement('div');
+            appendix.innerHTML = '<hr><h2>📎 Appendix: Stored Records</h2>';
+            if (recordsWithData.length === 0) {
+                appendix.innerHTML += '<p><em>No records stored.</em></p>';
+            } else {
+                appendix.innerHTML +=
+                    `<p><em>${recordsWithData.length} record(s) attached to this playbook export, grouped by phase folder, oldest first within each.</em></p>`;
+                let counter = 0;
+                PHASES.forEach((phaseName) => {
+                  const inPhase = recordsWithData.filter((r) => getPhase(r.meta) === phaseName);
+                  if (!inPhase.length) return;
+                  const ph = document.createElement('h3');
+                  ph.textContent = '📁 ' + phaseName + '/  (' + inPhase.length + ')';
+                  ph.style.cssText = 'margin-top:22px;border-bottom:1px solid #d0d7de;padding-bottom:4px;break-after:avoid;page-break-after:avoid;font-family:ui-monospace,Menlo,Monaco,Consolas,monospace;';
+                  appendix.appendChild(ph);
+                  inPhase.forEach((f) => {
+                    const i = counter++;
+                    const div = document.createElement('div');
+                    div.style.cssText =
+                        'page-break-inside: avoid; break-inside: avoid; border:1px solid #d0d7de; border-radius:6px; padding:12px; margin:12px 0; background:#fff;';
+                    const title = getTitle(f.meta);
+                    const desc = getDescription(f.meta);
+                    const cat = getCategory(f.meta);
+                    let html = `<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;">
+                        <div style="font-weight:600;color:#1f2328;font-size:1em;">${i + 1}. ${escapeHtml(title)}</div>
+                        ${cat ? `<span style="font-size:0.7em;padding:2px 8px;border-radius:10px;background:#ddf4ff;color:#0969da;font-weight:600;text-transform:uppercase;white-space:nowrap;">${escapeHtml(cat)}</span>` : ''}
+                    </div>`;
+                    if (desc) {
+                        html += `<div style="margin-top:4px;color:#57606a;font-size:0.9em;">${escapeHtml(desc)}</div>`;
+                    }
+                    const metaBits = [];
+                    if (f.meta.blob) metaBits.push(`${escapeHtml(f.meta.type || 'binary')} · ${formatBytes(f.meta.size)}`);
+                    metaBits.push(new Date(f.meta.timestamp).toLocaleString());
+                    html += `<div style="font-size:0.8em;color:#8b949e;margin-top:4px;">${metaBits.join(' · ')}</div>`;
+                    if (f.meta.isImage && f.dataUrl) {
+                        html += `<div style="margin-top:8px;"><img src="${f.dataUrl}" style="max-width:100%;border-radius:4px;border:1px solid #d0d7de;"></div>`;
+                    } else if (f.meta.blob && f.textData !== null) {
+                        html += `<pre style="margin-top:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;padding:10px;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;font-size:8.5pt;line-height:1.4;font-family:ui-monospace,Menlo,Monaco,Consolas,monospace;color:#24292f;">${escapeHtml(f.textData)}</pre>`;
+                        if (f.truncated) {
+                            html += `<div style="font-size:0.8em;color:#9a6700;font-style:italic;margin-top:4px;">… preview truncated to the first ${TEXT_PREVIEW_LIMIT.toLocaleString()} characters (full file is ${formatBytes(f.meta.size)})</div>`;
+                        }
+                    } else if (f.meta.blob) {
+                        html += `<div style="margin-top:8px;font-size:0.85em;color:#57606a;font-style:italic;">[${escapeHtml(f.meta.type || 'binary file')} — attached, not previewable in PDF]</div>`;
+                    }
+                    div.innerHTML = html;
+                    appendix.appendChild(div);
+                  });
+                });
+            }
+            clone.appendChild(appendix);
+
+            const printCSS = `
+                @page { margin: 15mm; }
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+                    color: #24292f; background: #fff; margin: 0; padding: 0;
+                    line-height: 1.6; font-size: 11pt;
+                }
+                .container { max-width: 100%; padding: 0; border: none; box-shadow: none; background: #fff; }
+                h1 { font-size: 1.8em; border-bottom: 2px solid #0969da; padding-bottom: 8px; color: #1f2328; }
+                h2 { font-size: 1.3em; border-bottom: 1px solid #d0d7de; padding-bottom: 6px; color: #1f2328; margin-top: 24px; }
+                h3 { font-size: 1.05em; color: #1f2328; margin-top: 18px; }
+                pre { background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; padding: 12px; white-space: pre-wrap; word-wrap: break-word; font-size: 9pt; color: #24292f; }
+                code { font-family: ui-monospace, Menlo, Monaco, Consolas, monospace; font-size: 9pt; }
+                pre code { background: transparent; padding: 0; color: #24292f; }
+                :not(pre) > code { background: rgba(110,118,129,0.15); padding: 0.15em 0.35em; border-radius: 4px; color: #cf222e; }
+                ul { padding-left: 22px; }
+                li { margin-bottom: 5px; }
+                .diagram { background: #f6f8fa; border: 1px dashed #0969da; color: #0969da; padding: 10px; border-radius: 6px; text-align: center; font-family: monospace; font-weight: bold; margin: 12px 0; }
+                .warning-box { border-left: 4px solid #9a6700; background: #fff8c5; padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 12px 0; }
+                hr { border: none; border-top: 1px solid #d0d7de; margin: 20px 0; }
+                button, input, .upload-area, .file-actions, .copy-btn { display: none !important; }
+            `;
+
+            const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Operations Playbook Export</title>
+<style>${printCSS}</style>
+</head>
+<body>${clone.outerHTML}</body>
+</html>`;
+
+            const win = window.open('', '_blank');
+            if (!win) { showToast('Please allow popups to export PDF'); return; }
+            win.document.open();
+            win.document.write(html);
+            win.document.close();
+            win.onload = () => {
+                setTimeout(() => { win.focus(); win.print(); }, 400);
+            };
+            showToast('Print dialog opened — choose "Save as PDF"');
+        } catch (e) {
+            showToast('Export failed: ' + e.message);
+        }
+    }
+
+    /* ============ Wiring ============ */
+    document.addEventListener('DOMContentLoaded', async () => {
+        populatePhaseSelects();
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            handleQuickUpload(e.target.files);
+            e.target.value = '';
+        });
+
+        const area = document.getElementById('uploadArea');
+        ['dragenter', 'dragover'].forEach((ev) =>
+            area.addEventListener(ev, (e) => { e.preventDefault(); area.classList.add('dragover'); })
+        );
+        ['dragleave', 'dragend'].forEach((ev) =>
+            area.addEventListener(ev, () => area.classList.remove('dragover'))
+        );
+        area.addEventListener('drop', (e) => {
+            e.preventDefault();
+            area.classList.remove('dragover');
+            if (e.dataTransfer && e.dataTransfer.files.length) handleQuickUpload(e.dataTransfer.files);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('recordModal').classList.contains('open')) {
+                closeRecordModal();
+            }
+        });
+
+        try {
+            await openDB();
+            renderFiles();
+        } catch (e) {
+            document.getElementById('storageInfo').textContent = 'IndexedDB unavailable';
+            document.getElementById('fileGrid').innerHTML =
+                '<div class="empty-state">Your browser does not support IndexedDB, or storage is blocked. Records cannot be saved.</div>';
+        }
+    });
+
+    /* ============ PWA: Service Worker ============ */
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').catch((e) => console.warn('SW registration failed:', e));
+        });
+    }
+</script>
+
+</body>
+</html>
